@@ -42,10 +42,10 @@ func main () {
 
 func PickOne(k kuji.Kuji) {
 	for i := 0; i < 1000; i++ {
-		num, err := k.PickOneByKey("gacha")
+		str, err := k.PickOneByKey("gacha")
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("Picked card ID is %d \n", num)
+		fmt.Printf("Picked card ID is %s \n", str)
 	}
 }
