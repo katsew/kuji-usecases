@@ -1,48 +1,51 @@
 package main
 
 import (
+	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/katsew/kuji"
 	"github.com/katsew/kuji-redis"
-	"github.com/go-redis/redis"
-	"fmt"
 )
 
-func main () {
+func main() {
 	opt := redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr:     "127.0.0.1:6379",
 		Password: "",
-		DB: 0,
+		DB:       0,
 	}
 	kr := kuji_redis.NewSimpleStrategy(&opt)
-	instance := kuji.NewKuji(kr)
+	k := kuji.NewKuji()
+	k.Use("redis", kuji.KujiStrategyConfig{
+		Strategy: kr,
+	})
 
 	c := []kuji.KujiCandidate{
 		kuji.KujiCandidate{
-			Id: 1,
+			Id:     1,
 			Weight: 5,
 		},
 		kuji.KujiCandidate{
-			Id: 2,
+			Id:     2,
 			Weight: 15,
 		},
 		kuji.KujiCandidate{
-			Id: 3,
+			Id:     3,
 			Weight: 80,
 		},
 	}
 
-	_, err := instance.RegisterCandidatesWithKey("gacha", c)
-	if (err != nil) {
+	_, err := k.RegisterCandidatesWithKey("redis", "gacha", c)
+	if err != nil {
 		panic(err)
 	}
 
-	PickOne(instance)
+	PickOne(k)
 
 }
 
 func PickOne(k kuji.Kuji) {
 	for i := 0; i < 1000; i++ {
-		str, err := k.PickOneByKey("gacha")
+		str, err := k.PickOneByKey("redis", "gacha")
 		if err != nil {
 			panic(err)
 		}
